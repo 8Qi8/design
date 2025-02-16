@@ -1,0 +1,59 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  datasource:
+    driver-class-name: ${sky.datasource.driver-class-name}
+    url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${sky.datasource.username}
+    password: ${sky.datasource.password}
+  data:
+    redis:
+      host: ${sky.redis.host}
+      port: ${sky.redis.port}
+      password: ${sky.redis.password}
+      database: ${sky.redis.database}
+
+
+
+mybatis-plus:
+  global-config:
+    db-config:
+      table-prefix: tbl_
+      id-type: auto
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true #开启自动驼峰命名规则（camel case）映射
+
+logging:
+  level:
+    com:
+      yyq:
+        mapper: debug
+        service: info
+        controller: info
+
+sky:
+  jwt:
+    admin-secret-key: itcast
+    admin-ttl: 7200000
+    admin-token-name: token
+    user-secret-key: itheima
+    user-ttl: 7200000
+    user-token-name: authentication
+
+  alioss:
+    endpoint: ${sky.alioss.endpoint}
+    access-key-id: ${sky.alioss.access-key-id}
+    access-key-secret: ${sky.alioss.access-key-secret}
+    bucket-name: ${sky.alioss.bucket-name}
+
+  sms:
+    accessKeyId: ${sky.sms.accessKeyId}
+    accessKeySecret: ${sky.sms.accessKeySecret}
+
+
