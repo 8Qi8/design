@@ -34,4 +34,6 @@ public class User {
     private LocalDateTime createTime;
     //更新时间
     private LocalDateTime updateTime;
+    //热度
+    private Integer heat;
 }
