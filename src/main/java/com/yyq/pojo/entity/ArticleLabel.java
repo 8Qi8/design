@@ -1,0 +1,23 @@
+package com.yyq.pojo.entity;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serial;
+import java.io.Serializable;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@TableName("article_label")
+public class ArticleLabel{
+
+    private Long id;
+    private Long articleId;
+    private Long labelId;
+
+}

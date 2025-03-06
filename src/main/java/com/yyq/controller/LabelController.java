@@ -1,22 +1,21 @@
 package com.yyq.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import com.yyq.common.result.PageResult;
 import com.yyq.common.result.Result;
 import com.yyq.pojo.entity.Label;
 import com.yyq.service.ILabelService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/label")
+@Slf4j
 public class LabelController {
-    private static final Logger log = LoggerFactory.getLogger(LabelController.class);
+
     @Autowired
     private ILabelService labelService;
     /**
@@ -71,6 +70,15 @@ public class LabelController {
     public PageResult getLabelPage(@PathVariable int currentSize, @PathVariable int pageSize) {
         PageResult labelPage = labelService.getLabelPage(currentSize, pageSize);
         return labelPage;
+    }
+    /**
+     * 根据ids获取标签
+     */
+    @GetMapping("/ids")
+    public Result<List<Label>> getLabelByIds(@RequestParam List<Long> labelIds) {
+        log.info("根据ids获取标签");
+        List<Label> list = labelService.listByIds(labelIds);
+        return Result.success(list);
     }
 
 }

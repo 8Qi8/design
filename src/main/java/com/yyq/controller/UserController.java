@@ -48,7 +48,7 @@ public class UserController {
 
         //登录成功后，生成jwt令牌
         Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.EMP_ID, user.getId());
+        claims.put(JwtClaimsConstant.USER_ID, user.getId());
         String token = JwtUtil.createJWT(
                 jwtProperties.getAdminSecretKey(),
                 jwtProperties.getAdminTtl(),
@@ -77,7 +77,7 @@ public class UserController {
 
         // 登录成功后，生成jwt令牌
         Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.EMP_ID, user.getId());
+        claims.put(JwtClaimsConstant.USER_ID, user.getId());
         String token = JwtUtil.createJWT(
                 jwtProperties.getAdminSecretKey(),
                 jwtProperties.getAdminTtl(),

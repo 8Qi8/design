@@ -23,12 +23,10 @@ spring:
 mybatis-plus:
   global-config:
     db-config:
-      table-prefix: tbl_
       id-type: auto
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true #开启自动驼峰命名规则（camel case）映射
-
 logging:
   level:
     com:

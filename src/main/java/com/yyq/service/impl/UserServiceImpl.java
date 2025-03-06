@@ -51,7 +51,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (storedVerificationCode == null || !storedVerificationCode.equalsIgnoreCase(userLoginDTO.getVerificationCode())) {
             throw new VerificationCodeErrorException(MessageConstant.VERIFICATION_CODE_ERROR);
         }
-
         return user;
     }
     /**
