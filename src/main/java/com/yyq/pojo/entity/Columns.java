@@ -12,21 +12,15 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("article") // 对应数据库表名
-public class Article {
+@TableName("columns") // 对应数据库表名
+public class Columns {
     private Long id;
-    private String title;
-    private String content;
-    private Integer heat;
     private Long userId;
-    private String summary;
-    private String coverImage;
-    private Integer views;
-    private String status;
+    private String name;
+    private String description;
+    private Integer isTop;
+    private Integer heat;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    private Long updateId;
-    private Integer isTop;
-    private Integer likeCount;
-    private Integer columnId;
+
 }

@@ -29,4 +29,5 @@ public class ArticleVO {
     private Integer isTop;
     private Integer likeCount;
     private List<Long> labelIds = new ArrayList<>();
+    private Integer columnId;
 }

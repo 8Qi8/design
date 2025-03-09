@@ -2,6 +2,7 @@ package com.yyq.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -159,6 +161,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             log.info("更新标签的热度");
             labelMapper.updateHeatBatch(labelIds, 5);
         }
+        // 添加至专栏
+
     }
 
     /**
@@ -221,6 +225,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                         .setSql("views = views + 1")
                         .eq("id", id)
         );
+        // 更新文章的热度
+        baseMapper.update(null,
+                new UpdateWrapper<Article>()
+                        .setSql("heat = heat + 1")
+                        .eq("id", id)
+        );
     }
 
     /**
@@ -237,15 +247,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                         .setSql("like_count = like_count + 1")
                         .eq("id", id)
         );
+        // 2. 更新文章的热度
+        baseMapper.update(null,
+                new UpdateWrapper<Article>()
+                        .setSql("heat = heat + 3")
+                        .eq("id", id)
+        );
 
-        // 2. 插入点赞关系记录
+        // 3. 插入点赞关系记录
         ArticleLike articleLike = new ArticleLike();
         articleLike.setUserId(userId);
         articleLike.setArticleId(id);
         articleLike.setCreateTime(LocalDateTime.now());
         articleLikeMapper.insert(articleLike);
     }
-    //取消点赞
+    /**
+     * 根据id减少点赞量-1
+     *
+     * @param id
+     */
     @Override
     @Transactional
     public void unlikeArticle(Long id, Long userId) {
@@ -261,6 +281,97 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                         .eq("id", id)
         );
     }
+    // 根据专栏id查询文章
+    @Override
+    public List<ArticleVO> getByColumnId(Long columnId) {
+        List<Article> articles = baseMapper.selectList(new QueryWrapper<Article>()
+                .eq("column_id", columnId)
+                .eq("status", "published")
+        );
+        List<ArticleVO> articleVOS = new ArrayList<>();
+        for (Article article : articles) {
+            ArticleVO articleVO = new ArticleVO();
+            BeanUtils.copyProperties(article, articleVO);
+            // 2. 查询关联标签ID列表
+            List<Long> labelIds = articleLabelMapper.selectLabelIdsByArticleId(article.getId());
+            articleVO.setLabelIds(labelIds);
+            articleVOS.add(articleVO);
+        }
+        return articleVOS;
+    }
+    /**
+     * 批量取消收藏文章
+     *
+     * @param articleIds
+     * @return
+     */
+    @Override
+    public boolean cancelBatchCollection(List<Long> articleIds) {
+        // 示例SQL: UPDATE article SET column_id = null WHERE id IN (...)
+        return update(new LambdaUpdateWrapper<Article>()
+                .set(Article::getColumnId, null)  // 显式指定字段
+                .in(Article::getId, articleIds));
+    }
+    /**
+     * 批量收录至专栏
+     *
+     * @param articleIds
+     * @param columnId
+     * @return
+     */
+    @Override
+    public boolean batchCollection(List<Long> articleIds, Long columnId) {
+        return update(new LambdaUpdateWrapper<Article>()
+                .set(Article::getColumnId, columnId)
+                .in(Article::getId, articleIds));
+    }
+    /**
+     * 获取当前用户未收录的专栏文章
+     *
+     * @param columnId
+     * @return
+     */
+    @Override
+    public List<ArticleVO> getUncollectedArticles(Long columnId, Long userId) {
+        // 单次查询实现
+        List<Article> articles = lambdaQuery()
+                .eq(Article::getStatus, "published")
+                .and(wrapper -> wrapper
+                        .eq(Article::getUserId, userId)
+                        .and(inner -> {
+                            if (columnId != null) {
+                                inner.ne(Article::getColumnId, columnId)
+                                        .or()
+                                        .isNull(Article::getColumnId);
+                            } else {
+                                inner.isNull(Article::getColumnId);
+                            }
+                        })
+                )
+                .list();
 
+        // 转换VO
+        return articles.stream().map(article -> {
+            ArticleVO vo = new ArticleVO();
+            BeanUtils.copyProperties(article, vo);
+            vo.setLabelIds(articleLabelMapper.selectLabelIdsByArticleId(article.getId()));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+    // 获取所有文章
+    @Override
+    public List<ArticleVO> getList() {
+        List<Article> articles = baseMapper.selectList(null);
+        List<ArticleVO> articleVOS = new ArrayList<>();
+        for (Article article : articles) {
+            ArticleVO articleVO = new ArticleVO();
+            BeanUtils.copyProperties(article, articleVO);
+            // 2. 查询关联标签ID列表
+            List<Long> labelIds = articleLabelMapper.selectLabelIdsByArticleId(article.getId());
+            articleVO.setLabelIds(labelIds);
+            articleVOS.add(articleVO);
+        }
+        return articleVOS;
+    }
 
 }

@@ -18,4 +18,5 @@ public class ArticleAddDTO{
     private String coverImage;
     private String status;
     private List<Long> labelIds = new ArrayList<>(); // 新增标签ID列表
+    private Integer columnId;
 }

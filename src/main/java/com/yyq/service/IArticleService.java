@@ -29,4 +29,14 @@ public interface IArticleService extends IService<Article> {
     void likeArticle(Long id, Long userId);
 
     void unlikeArticle(Long id, Long userId);
+
+    List<ArticleVO> getByColumnId(Long columnId);
+
+    boolean cancelBatchCollection(List<Long> articleIds);
+
+    boolean batchCollection(List<Long> articleIds, Long columnId);
+
+    List<ArticleVO> getUncollectedArticles(Long columnId, Long userId);
+
+    List<ArticleVO> getList();
 }

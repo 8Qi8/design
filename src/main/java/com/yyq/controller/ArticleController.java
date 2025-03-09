@@ -28,6 +28,16 @@ public class ArticleController {
         return Result.success("添加成功");
     }
     /**
+     * 获取所有已发表文章
+     */
+    @GetMapping("/list")
+    public Result<List<ArticleVO>> getAll() {
+        log.info("获取所有已发表文章");
+        List<ArticleVO> list = articleService.getList();
+        return Result.success(list);
+    }
+
+    /**
      * 根据用户id获取草稿箱
      */
     @GetMapping("/{id}/draft")
@@ -83,7 +93,7 @@ public class ArticleController {
         return pageResult;
     }
     /**
-     * 增加某篇文章阅读数
+     * 增加某篇文章阅读数，热度+1
      */
     @PutMapping("/{id}/read")
     public Result<String> read(@PathVariable Long id) {
@@ -93,7 +103,7 @@ public class ArticleController {
     }
 
     /**
-     * 为某篇文章点赞
+     * 为某篇文章点赞，文章热度+3
      */
     @PutMapping("/{id}/{userId}/like")
     public Result<String> like(@PathVariable Long id, @PathVariable Long userId) {
@@ -118,4 +128,64 @@ public class ArticleController {
     //@GetMapping("/{id}/stats")
 
 
+    /**
+     *查询某一专栏下的文章
+     */
+    @GetMapping("/column/{columnId}")
+    public Result<List<ArticleVO>> getByColumnId(@PathVariable Long columnId) {
+        log.info("查询某一专栏下的文章：{}",columnId);
+        List<ArticleVO> list = articleService.getByColumnId(columnId);
+        return Result.success(list);
+    }
+    /**
+     * 批量添加至某专栏
+     */
+    @PutMapping("/collection")
+    public Result<String> batchCollection(@RequestParam List<Long> articleIds, @RequestParam Long columnId) {
+        log.info("批量添加至某专栏: {}", articleIds);
+        // 验证是否包含有效ID
+        if (articleIds == null || articleIds.isEmpty()) {
+            return Result.error("请选择需要收录的文章");
+        }
+        // 执行批量添加操作
+        boolean success = articleService.batchCollection(articleIds, columnId);
+        return success ?
+                Result.success("批量添加成功") :
+               Result.error("操作失败，请检查文章状态");
+    }
+    /**
+     * 批量取消收录某片文章
+     */
+    @PutMapping("/cancelCollection")
+    public Result<String> cancelBatchCollection(@RequestParam List<Long> articleIds) {
+        log.info("批量取消收录文章: {}", articleIds);
+        // 验证是否包含有效ID
+        if (articleIds == null || articleIds.isEmpty()) {
+            return Result.error("请选择需要取消收录的文章");
+        }
+        // 执行批量取消收录操作
+        boolean success = articleService.cancelBatchCollection(articleIds);
+        return success ?
+                Result.success("批量取消收录成功") :
+                Result.error("操作失败，请检查文章状态");
+    }
+    /**
+     * 获取当前用户未收录至当前专栏的所有文章
+     */
+    @GetMapping("/{columnId}/uncollected")
+    public Result<List<ArticleVO>> getUncollectedArticles(@PathVariable Long columnId, @RequestParam Long userId) {
+        log.info("获取当前用户: {} 未收录至当前专栏: {}的所有文章", userId, columnId);
+        List<ArticleVO> list = articleService.getUncollectedArticles(columnId, userId);
+        return Result.success(list);
+    }
+    /**
+     * 批量移动至其它专栏
+     */
+    @PutMapping("/move")
+    public Result<String> moveToOtherColumn(@RequestParam List<Long> articleIds, @RequestParam Long columnId) {
+        log.info("批量移动至其它专栏: {}", articleIds);
+        return articleService.batchCollection(articleIds, columnId) ?
+                Result.success("批量移动成功") :
+                Result.error("操作失败，请检查文章状态");
+    }
 }
