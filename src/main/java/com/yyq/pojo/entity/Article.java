@@ -29,4 +29,5 @@ public class Article {
     private Integer isTop;
     private Integer likeCount;
     private Integer columnId;
+    private Integer commentCount;
 }

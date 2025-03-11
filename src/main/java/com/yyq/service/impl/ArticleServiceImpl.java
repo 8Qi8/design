@@ -8,15 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.yyq.common.result.PageResult;
-import com.yyq.mapper.ArticleLabelMapper;
-import com.yyq.mapper.ArticleLikeMapper;
-import com.yyq.mapper.ArticleMapper;
-import com.yyq.mapper.LabelMapper;
+import com.yyq.mapper.*;
 import com.yyq.pojo.dto.ArticleAddDTO;
-import com.yyq.pojo.entity.Article;
-import com.yyq.pojo.entity.ArticleLabel;
-import com.yyq.pojo.entity.ArticleLike;
-import com.yyq.pojo.entity.Label;
+import com.yyq.pojo.entity.*;
 import com.yyq.pojo.vo.ArticleVO;
 import com.yyq.service.IArticleService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +36,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private ArticleMapper articleMapper;
     @Autowired
     private ArticleLikeMapper articleLikeMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 保存文章
@@ -295,6 +291,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             // 2. 查询关联标签ID列表
             List<Long> labelIds = articleLabelMapper.selectLabelIdsByArticleId(article.getId());
             articleVO.setLabelIds(labelIds);
+            articleVO.setUserName(userMapper.selectById(article.getUserId()).getUsername());
+            articleVO.setUserAvatar(userMapper.selectById(article.getUserId()).getAvatar());
             articleVOS.add(articleVO);
         }
         return articleVOS;
@@ -355,6 +353,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             ArticleVO vo = new ArticleVO();
             BeanUtils.copyProperties(article, vo);
             vo.setLabelIds(articleLabelMapper.selectLabelIdsByArticleId(article.getId()));
+            vo.setUserName(userMapper.selectById(article.getUserId()).getUsername());
+            vo.setUserAvatar(userMapper.selectById(article.getUserId()).getAvatar());
             return vo;
         }).collect(Collectors.toList());
     }
@@ -369,6 +369,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             // 2. 查询关联标签ID列表
             List<Long> labelIds = articleLabelMapper.selectLabelIdsByArticleId(article.getId());
             articleVO.setLabelIds(labelIds);
+            articleVO.setUserName(userMapper.selectById(article.getUserId()).getUsername());
+            articleVO.setUserAvatar(userMapper.selectById(article.getUserId()).getAvatar());
             articleVOS.add(articleVO);
         }
         return articleVOS;

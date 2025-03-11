@@ -19,6 +19,8 @@ public class ArticleVO {
     private String content;
     private Integer heat;
     private Long userId;
+    private String userName;
+    private String userAvatar;
     private String summary;
     private String coverImage;
     private Integer views;
@@ -28,6 +30,8 @@ public class ArticleVO {
     private Long updateId;
     private Integer isTop;
     private Integer likeCount;
+    private Integer commentCount;
+
     private List<Long> labelIds = new ArrayList<>();
     private Integer columnId;
 }

@@ -12,13 +12,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("comment") // 对应数据库表名
-public class Comment {
+@TableName("user_follow") // 对应数据库表名
+public class UserFollow {
     private Long id;
-    private Long articleId;
     private Long userId;
-    private Long parentId;
-    private Long targetUserId;
-    private String content;
+    private Long followeeId;
     private LocalDateTime createTime;
 }
