@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import com.yyq.common.exception.LabelNoArticleException;
 import com.yyq.common.result.PageResult;
 import com.yyq.mapper.*;
 import com.yyq.pojo.dto.ArticleAddDTO;
@@ -369,6 +370,29 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             // 2. 查询关联标签ID列表
             List<Long> labelIds = articleLabelMapper.selectLabelIdsByArticleId(article.getId());
             articleVO.setLabelIds(labelIds);
+            articleVO.setUserName(userMapper.selectById(article.getUserId()).getUsername());
+            articleVO.setUserAvatar(userMapper.selectById(article.getUserId()).getAvatar());
+            articleVOS.add(articleVO);
+        }
+        return articleVOS;
+    }
+    // 根据标签id查询文章
+    @Override
+    public List<ArticleVO> getByLabelId(Long labelId) {
+        //1.查询文章标签关系
+        List<Long> articleIds = articleLabelMapper.selectArticleIdsByLabelId(labelId);
+        if (articleIds == null || articleIds.isEmpty()) {
+            return new ArrayList<>(); // 直接返回空列表
+        }
+
+        //2.查询含有该标签的文章
+        List<Article> articles = baseMapper.selectBatchIds(articleIds);
+
+        List<ArticleVO> articleVOS = new ArrayList<>();
+        for (Article article : articles) {
+            ArticleVO articleVO = new ArticleVO();
+            BeanUtils.copyProperties(article, articleVO);
+            articleVO.setLabelIds(articleLabelMapper.selectLabelIdsByArticleId(article.getId()));
             articleVO.setUserName(userMapper.selectById(article.getUserId()).getUsername());
             articleVO.setUserAvatar(userMapper.selectById(article.getUserId()).getAvatar());
             articleVOS.add(articleVO);

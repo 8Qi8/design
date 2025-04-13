@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yyq.mapper.MessageMapper">
+    <select id="selectPrivateMessagesByUserId" resultType="com.yyq.pojo.vo.MessageVO">
+        SELECT
+            m.id,
+            m.sender_id AS senderId,
+            m.receiver_id AS receiverId,
+            m.content,
+            m.create_time AS createTime,
+            u.username AS senderUsername,
+            u.avatar AS senderAvatar
+        FROM message m
+                 LEFT JOIN user u ON m.sender_id = u.id
+        WHERE m.receiver_id = #{userId}
+          AND m.type = 'PRIVATE'
+        ORDER BY m.create_time DESC
+    </select>
+    <select id="listChatUsers" resultType="com.yyq.pojo.vo.ChatUserVO">
+        SELECT
+            m.id,
+            IF(m.sender_id = #{userId}, m.receiver_id, m.sender_id) AS userId,
+            u.username,
+            u.avatar,
+            m.content AS lastContent,
+            m.create_time AS lastTime
+        FROM message m
+                 LEFT JOIN user u
+                           ON u.id = IF(m.sender_id = #{userId}, m.receiver_id, m.sender_id)
+        WHERE (m.sender_id = #{userId} OR m.receiver_id = #{userId})
+          AND m.type = 'PRIVATE'
+          AND m.id IN (
+            SELECT MAX(id)
+            FROM message
+            WHERE (sender_id = #{userId} OR receiver_id = #{userId}) AND type = 1
+            GROUP BY
+                IF(sender_id = #{userId}, receiver_id, sender_id)
+        )
+        ORDER BY m.create_time DESC
+    </select>
+</mapper>

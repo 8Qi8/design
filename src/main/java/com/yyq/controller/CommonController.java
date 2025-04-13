@@ -4,8 +4,10 @@ package com.yyq.controller;
 import com.yyq.common.constant.MessageConstant;
 import com.yyq.common.result.Result;
 import com.yyq.common.utils.AliOssUtil;
+import com.yyq.common.utils.QwenAIUtil;
 import com.yyq.common.utils.SmsUtil;
 import com.yyq.common.utils.VerificationCodeUtil;
+import com.yyq.pojo.dto.AIDTO;
 import com.yyq.service.IUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -85,4 +87,16 @@ public class CommonController {
         log.info("生成的验证码: {}", phoneCode);
         return Result.success();
     }
+    /**
+     * 调用千问大模型
+     * @param
+     * @return
+     */
+    @PostMapping("/aiChat")
+    public Result<String> chat(@RequestBody AIDTO aidto) {
+        log.info("调用千问大模型: {}",aidto);
+        String s = QwenAIUtil.askAI(aidto.getContent(), aidto.getQuestion());
+        return Result.success(s);
+    }
+
 }

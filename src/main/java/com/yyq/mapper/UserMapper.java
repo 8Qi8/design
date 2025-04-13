@@ -3,6 +3,7 @@ package com.yyq.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.yyq.pojo.entity.User;
+import com.yyq.pojo.vo.UserStatVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -18,4 +19,6 @@ public interface UserMapper extends BaseMapper<User> { // 继承BaseMapper
     // 根据id查询用户头像
     @Select("select avatar from user where id = #{userId}")
     String findUserAvatarById(Long userId);
+
+    UserStatVO getUserStats(Long userId);
 }

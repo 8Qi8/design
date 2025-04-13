@@ -8,6 +8,7 @@ import com.yyq.common.utils.JwtUtil;
 import com.yyq.pojo.dto.UserLoginDTO;
 import com.yyq.pojo.entity.User;
 import com.yyq.pojo.vo.UserLoginVO;
+import com.yyq.pojo.vo.UserStatVO;
 import com.yyq.service.IUserService;
 import io.swagger.annotations.ApiOperation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -152,6 +153,15 @@ public class UserController {
         userService.update(userLoginDTO);
         return Result.success("用户信息更新成功");
     }
+    /**
+     * 查询用户数据
+     */
+    @GetMapping("/stats/{userId}")
+    public Result<UserStatVO> getUserData(@PathVariable Long userId) {
+        UserStatVO userStats = userService.getUserStats(userId);
+        return Result.success(userStats);
+    }
+
     /**
      * 分页查询用户
      * @param employeePageQueryDTO

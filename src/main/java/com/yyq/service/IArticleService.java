@@ -39,4 +39,6 @@ public interface IArticleService extends IService<Article> {
     List<ArticleVO> getUncollectedArticles(Long columnId, Long userId);
 
     List<ArticleVO> getList();
+
+    List<ArticleVO> getByLabelId(Long labelId);
 }

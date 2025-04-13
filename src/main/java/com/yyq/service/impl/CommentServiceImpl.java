@@ -98,7 +98,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }
         return rootComments;
     }
-
+    /**
+     * 删除评论
+     * @param id
+     */
     @Override
     @Transactional
     public void deleteComment(Long id) {

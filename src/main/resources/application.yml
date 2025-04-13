@@ -19,7 +19,6 @@ spring:
       database: ${sky.redis.database}
 
 
-
 mybatis-plus:
   global-config:
     db-config:
@@ -53,5 +52,10 @@ sky:
   sms:
     accessKeyId: ${sky.sms.accessKeyId}
     accessKeySecret: ${sky.sms.accessKeySecret}
+
+
+qwen:
+  api-key: "sk-6965b2a32889477391244a6910afcac4"
+  api-url: "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
 
 

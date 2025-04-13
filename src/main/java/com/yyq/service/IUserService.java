@@ -3,6 +3,7 @@ package com.yyq.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yyq.pojo.dto.UserLoginDTO;
 import com.yyq.pojo.entity.User;
+import com.yyq.pojo.vo.UserStatVO;
 import jakarta.servlet.http.HttpServletRequest;
 
 public interface IUserService extends IService<User> {
@@ -44,4 +45,6 @@ public interface IUserService extends IService<User> {
      * @param userLoginDTO
      */
     void update(UserLoginDTO userLoginDTO);
+
+    UserStatVO getUserStats(Long userId);
 }

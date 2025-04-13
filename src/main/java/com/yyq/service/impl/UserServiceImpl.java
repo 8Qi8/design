@@ -9,10 +9,12 @@ import com.yyq.common.exception.VerificationCodeErrorException;
 import com.yyq.mapper.UserMapper;
 import com.yyq.pojo.dto.UserLoginDTO;
 import com.yyq.pojo.entity.User;
+import com.yyq.pojo.vo.UserStatVO;
 import com.yyq.service.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -22,6 +24,8 @@ import java.time.LocalDateTime;
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
+    @Autowired
+    private UserMapper userMapper;
     /**
      * 用户登录
      * @param userLoginDTO
@@ -162,5 +166,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // 执行更新操作
         this.update(updateWrapper);
     }
+
+    @Override
+    public UserStatVO getUserStats(Long userId) {
+        return userMapper.getUserStats(userId);
+    }
+
 
 }

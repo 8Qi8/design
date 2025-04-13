@@ -56,6 +56,16 @@ public class ArticleController {
         return Result.success(list);
     }
     /**
+     * 根据标签id获取文章
+     */
+    @GetMapping("/label/{labelId}")
+    public Result<List<ArticleVO>> getByLabelId(@PathVariable Long labelId) {
+        log.info("根据标签id获取文章：{}",labelId);
+        List<ArticleVO> list = articleService.getByLabelId(labelId);
+        return Result.success(list);
+    }
+
+    /**
      * 根据id获取文章
      */
     @GetMapping("/{id}")
