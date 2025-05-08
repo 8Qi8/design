@@ -13,4 +13,6 @@ public class UserStatVO {
     private Integer fanCount;
     private Integer articleCount;
     private Integer articleReadCount;
+    private Integer articleCommentCount;
+    private Integer articleLikeCount;
 }

@@ -3,21 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yyq.mapper.MessageMapper">
-    <select id="selectPrivateMessagesByUserId" resultType="com.yyq.pojo.vo.MessageVO">
-        SELECT
-            m.id,
-            m.sender_id AS senderId,
-            m.receiver_id AS receiverId,
-            m.content,
-            m.create_time AS createTime,
-            u.username AS senderUsername,
-            u.avatar AS senderAvatar
-        FROM message m
-                 LEFT JOIN user u ON m.sender_id = u.id
-        WHERE m.receiver_id = #{userId}
-          AND m.type = 'PRIVATE'
-        ORDER BY m.create_time DESC
-    </select>
     <select id="listChatUsers" resultType="com.yyq.pojo.vo.ChatUserVO">
         SELECT
             m.id,
@@ -40,4 +25,48 @@
         )
         ORDER BY m.create_time DESC
     </select>
+    <select id="getLikeNotifications" resultType="com.yyq.pojo.vo.LikeNotificationVO">
+        SELECT
+            u.id AS senderId,
+            u.username AS senderName,
+            u.avatar AS senderAvatar,
+            a.id AS articleId,
+            a.title AS articleTitle,
+            m.create_time AS createTime
+        FROM message m
+                 JOIN user u ON m.sender_id = u.id
+                 JOIN article a ON INSTR(m.content, a.title) > 0
+        WHERE m.receiver_id = #{userId} AND m.type = 'LIKE'
+        ORDER BY m.create_time DESC
+    </select>
+    <select id="getFollowNotifications" resultType="com.yyq.pojo.vo.FollowNotificationVO">
+        SELECT
+            u.id AS senderId,
+            u.username AS senderName,
+            u.avatar AS senderAvatar,
+            m.create_time AS createTime
+        FROM message m
+                 JOIN user u ON m.sender_id = u.id
+        WHERE m.receiver_id = #{userId} AND m.type = 4
+        ORDER BY m.create_time DESC
+    </select>
+    <select id="selectCommentNotificationsByUserId" resultType="com.yyq.pojo.vo.CommentNotificationVO">
+        SELECT
+            u.id AS senderId,
+            u.username AS senderName,
+            u.avatar AS senderAvatar,
+            m.content AS commentContent ,
+            a.title AS articleTitle,   -- 从 article 表获取文章标题
+            a.id AS articleId,
+            m.create_time AS createTime
+        FROM message m
+                 LEFT JOIN user u ON m.sender_id = u.id  -- 连接 user 表，获取发送者信息
+                 LEFT JOIN article a ON INSTR(m.content, a.title) > 0  -- 假设 comment_content 中包含文章ID或文章标题
+        WHERE m.receiver_id = #{userId}  -- 查询接收者ID
+          AND m.type = 'COMMENT'          -- 只查询评论类型的消息
+        ORDER BY m.create_time DESC;      -- 按时间降序排列
+    </select>
+
+
+
 </mapper>

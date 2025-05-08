@@ -36,4 +36,6 @@ public class User {
     private LocalDateTime updateTime;
     //热度
     private Integer heat;
+    // 角色
+    private Integer role;
 }

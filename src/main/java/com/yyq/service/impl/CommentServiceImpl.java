@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yyq.mapper.ArticleMapper;
 import com.yyq.mapper.CommentMapper;
+import com.yyq.mapper.MessageMapper;
 import com.yyq.mapper.UserMapper;
 import com.yyq.pojo.dto.CommentDTO;
 import com.yyq.pojo.entity.Article;
@@ -32,6 +33,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private UserMapper userMapper;
     @Autowired
     private ArticleMapper articleMapper;
+    @Autowired
+    private MessageMapper messageMapper;
 
     /**
      * 添加评论

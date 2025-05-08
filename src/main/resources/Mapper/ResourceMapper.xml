@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yyq.mapper.ResourceMapper">
+    <!-- 直接通过别名自动映射到 ResourceVO -->
+    <select id="getListWithUser" resultType="com.yyq.pojo.vo.ResourceVO">
+        SELECT
+        r.id,
+        r.title,
+        r.description,
+        r.file_url AS fileUrl,          -- 下划线转驼峰
+        r.upload_time AS uploadTime,    -- 下划线转驼峰
+        r.download_count AS downloadCount,
+        r.uploader_id AS uploaderId,
+        u.username AS userName,         -- 匹配 userName 字段
+        u.avatar AS userAvatar          -- 匹配 userAvatar 字段
+        FROM
+        resource r
+        LEFT JOIN
+        user u ON r.uploader_id = u.id
+        <!--<where>
+            <if test="title != null and title != ''">
+                AND r.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>-->
+        ORDER BY
+        r.upload_time DESC
+    </select>
+    <select id="getListByTitleAndDescription" resultType="com.yyq.pojo.vo.ResourceVO">
+        SELECT
+        r.id,
+        r.title,
+        r.description,
+        r.file_url AS fileUrl,          -- 下划线转驼峰
+        r.upload_time AS uploadTime,    -- 下划线转驼峰
+        r.download_count AS downloadCount,
+        r.uploader_id AS uploaderId,
+        u.username AS userName,         -- 匹配 userName 字段
+        u.avatar AS userAvatar          -- 匹配 userAvatar 字段
+        FROM
+            resource r
+            LEFT JOIN
+            user u ON r.uploader_id = u.id
+        WHERE
+            r.title LIKE CONCAT('%', #{searchKey}, '%')
+            OR r.description LIKE CONCAT('%', #{searchKey}, '%')
+        ORDER BY
+            r.upload_time DESC
+    </select>
+</mapper>

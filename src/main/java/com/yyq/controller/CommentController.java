@@ -4,7 +4,10 @@ import com.yyq.common.result.Result;
 import com.yyq.pojo.dto.CommentDTO;
 import com.yyq.pojo.entity.Comment;
 import com.yyq.pojo.vo.CommentVO;
+import com.yyq.service.IArticleService;
 import com.yyq.service.ICommentService;
+import com.yyq.service.IMessageService;
+import com.yyq.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +21,12 @@ import java.util.List;
 public class CommentController {
     @Autowired
     private ICommentService commentService;
-
+    @Autowired
+    private IMessageService messageService;
+    @Autowired
+    private IUserService userService;
+    @Autowired
+    private IArticleService articleService;
     /**
      * 发表评论
      * @param commentDTO 评论实体（JSON格式）
@@ -28,6 +36,20 @@ public class CommentController {
     public Result<String> addComment(@RequestBody CommentDTO commentDTO) {
         log.info("发表评论：{}",commentDTO);
         commentService.addComment(commentDTO);
+        //是否发送评论通知
+        if (commentDTO.getParentId() == 0) { //根评论给文章作者发送通知
+            String username = userService.getById(commentDTO.getUserId()).getUsername();
+            String articleTitle = articleService.getById(commentDTO.getArticleId()).getTitle();
+            String content = "用户【" + username + "】评论了你的文章《" + articleTitle + "》："+commentDTO.getContent();
+            messageService.sendCommentNotification(commentDTO.getUserId(),commentDTO.getTargetUserId(),content);
+        }
+        else { //不是根评论
+            String username = userService.getById(commentDTO.getUserId()).getUsername();
+            String articleTitle = articleService.getById(commentDTO.getArticleId()).getTitle();
+            String content = "用户【" + username + "】回复了你在文章：《"+articleTitle+"》下的评论:" + commentDTO.getContent() ;
+            messageService.sendCommentNotification(commentDTO.getUserId(),commentDTO.getTargetUserId(),content);
+
+        }
         return Result.success("发表评论成功！");
     }
     /**

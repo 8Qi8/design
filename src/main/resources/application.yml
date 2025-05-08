@@ -17,7 +17,10 @@ spring:
       port: ${sky.redis.port}
       password: ${sky.redis.password}
       database: ${sky.redis.database}
-
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
 
 mybatis-plus:
   global-config:

@@ -9,6 +9,10 @@
         SELECT
             (SELECT COUNT(*) FROM user_follow WHERE followee_id = #{userId}) AS fanCount,
             (SELECT COUNT(*) FROM article WHERE user_id = #{userId}) AS articleCount,
-            (SELECT IFNULL(SUM(views), 0) FROM article WHERE user_id = #{userId}) AS articleReadCount
+            (SELECT IFNULL(SUM(views), 0) FROM article WHERE user_id = #{userId}) AS articleReadCount,
+            (SELECT IFNULL(SUM(like_count), 0) FROM article WHERE user_id = #{userId}) AS articleLikeCount,
+            (SELECT IFNULL(SUM(comment_count), 0) FROM article WHERE user_id = #{userId}) AS articleCommentCount
+
+
     </select>
 </mapper>

@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 @Service
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements IArticleService {
     @Autowired
+    private MessageMapper messageMapper;
+    @Autowired
     private ArticleLabelMapper articleLabelMapper;
     @Autowired
     private LabelMapper labelMapper;
@@ -257,6 +259,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articleLike.setArticleId(id);
         articleLike.setCreateTime(LocalDateTime.now());
         articleLikeMapper.insert(articleLike);
+
     }
     /**
      * 根据id减少点赞量-1

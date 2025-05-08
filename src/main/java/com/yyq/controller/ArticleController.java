@@ -4,8 +4,11 @@ import com.yyq.common.result.PageResult;
 import com.yyq.common.result.Result;
 import com.yyq.pojo.dto.ArticleAddDTO;
 import com.yyq.pojo.entity.Article;
+import com.yyq.pojo.entity.User;
 import com.yyq.pojo.vo.ArticleVO;
 import com.yyq.service.IArticleService;
+import com.yyq.service.IMessageService;
+import com.yyq.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,10 @@ import java.util.List;
 public class ArticleController {
     @Autowired
     private IArticleService articleService;
+    @Autowired
+    private IMessageService messageService;
+    @Autowired
+    private IUserService userService;
     /**
      * 添加文章
      */
@@ -119,6 +126,11 @@ public class ArticleController {
     public Result<String> like(@PathVariable Long id, @PathVariable Long userId) {
         log.info("用户{}为文章{}点赞", userId, id);
         articleService.likeArticle(id, userId);
+        //发送点赞通知
+        Article article = articleService.getById(id);
+        User user = userService.getById(userId);
+        String content = "用户【" + user.getUsername() + "】点赞了你的文章《" + article.getTitle() + "》";
+        messageService.sendLikeNotification(userId, article.getUserId(),content);
         return Result.success("点赞成功");
     }
 

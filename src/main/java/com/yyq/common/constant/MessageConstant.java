@@ -21,4 +21,5 @@ public class MessageConstant {
     public static final String PHONE_NOT_FOUND = "手机号未注册";
     public static final String PHONE_ALREADY_EXISTS = "手机号已存在";
     public static final String USERNAME_ALREADY_EXISTS = "用户名已存在";
+    public static final String RESOURCE_NOT_FOUND = "资源不存在";
 }

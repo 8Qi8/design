@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.yyq.common.result.Result;
 import com.yyq.pojo.entity.User;
 import com.yyq.pojo.entity.UserFollow;
+import com.yyq.service.IMessageService;
 import com.yyq.service.IUserFollowService;
+import com.yyq.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +20,18 @@ import java.util.List;
 public class UserFollowController {
     @Autowired
     private IUserFollowService  userFollowService;
+    @Autowired
+    private IMessageService messageService;
+    @Autowired
+    private IUserService userService;
     // 新增关注
     @PostMapping
     public Result<String> addFollow(@RequestBody UserFollow userFollow) {
         log.info("添加关注：{}",userFollow);
         userFollow.setCreateTime(LocalDateTime.now());
         userFollowService.save(userFollow);
+        String content = userService.getById(userFollow.getUserId()).getUsername() + "关注了你";
+        messageService.sendFollowNotification(userFollow.getUserId(), userFollow.getFolloweeId(), content);
         return Result.success("添加成功");
     }
     // 取消关注
