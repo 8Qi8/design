@@ -57,12 +57,12 @@ public class MessageController {
         return Result.success("新增粉丝提醒已发送");
     }
     /**
-     * 广播系统通知
+     * 发布系统通知
      */
-    @PostMapping("/systems")
-    public Result sendSystem(@RequestParam String content) {
-        messageService.sendSystemNotification(content);
-        return Result.success("系统通知已广播");
+    @PostMapping("/system/{adminId}")
+    public Result<String> sendSystem(@RequestParam String content, @PathVariable Long adminId) {
+        messageService.sendSystemNotification(content, adminId);
+        return Result.success("系统通知已发布");
     }
 
 
@@ -107,5 +107,14 @@ public class MessageController {
         List<CommentNotificationVO> list = messageService.getCommentNotificationsByUserId(userId);
         return Result.success(list);
     }
+    /**
+     * 获取系统通知
+     */
+    @GetMapping("/system/{userId}")
+    public Result<List<Message>> getSystemMessages(@PathVariable Long userId) {
+        List<Message> list = messageService.getSystemMessages(userId);
+        return Result.success(list);
+    }
+
 
 }

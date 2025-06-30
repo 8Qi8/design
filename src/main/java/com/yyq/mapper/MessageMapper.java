@@ -32,4 +32,5 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     List<CommentNotificationVO> selectCommentNotificationsByUserId(@Param("userId") Long userId);
 
+    void insertBatchSomeColumn(List<Message> messages);
 }

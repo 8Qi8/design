@@ -8,11 +8,13 @@ import com.yyq.pojo.entity.User;
 import com.yyq.pojo.vo.ArticleVO;
 import com.yyq.service.IArticleService;
 import com.yyq.service.IMessageService;
+import com.yyq.service.IUserFollowService;
 import com.yyq.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -25,6 +27,8 @@ public class ArticleController {
     private IMessageService messageService;
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IUserFollowService  userFollowService;
     /**
      * 添加文章
      */
@@ -209,5 +213,45 @@ public class ArticleController {
         return articleService.batchCollection(articleIds, columnId) ?
                 Result.success("批量移动成功") :
                 Result.error("操作失败，请检查文章状态");
+    }
+    /**
+     * 获取关注用户的文章
+     */
+    @GetMapping("/follow/articles")
+    public Result<List<ArticleVO>> getFollowedUsersArticles(@RequestParam Long userId) {
+        // 获取当前用户关注的用户ID列表
+        List<Long> followeeIds = userFollowService.getFolloweeIds(userId);
+
+        if (followeeIds.isEmpty()) {
+            return Result.success(Collections.emptyList());
+        }
+
+        // 查询这些用户发布的文章
+        List<ArticleVO> articles = articleService.getArticlesByUserIds(followeeIds);
+        return Result.success(articles);
+    }
+    /**
+     * 搜索文章
+     */
+    @GetMapping("/search")
+    public Result searchArticles(@RequestParam String keyword) {
+        List<ArticleVO> articles = articleService.searchArticles(keyword);
+        return Result.success(articles);
+    }
+    /**
+     * 获取点赞文章
+     */
+    @GetMapping("/like/{userId}")
+    public Result<List<ArticleVO>> getLikeArticles(@PathVariable Long userId) {
+        List<ArticleVO> articles = articleService.getLikeArticles(userId);
+        return Result.success(articles);
+    }
+    /**
+     * 根据文章id获取文章
+     */
+    @GetMapping("/title/{id}")
+    public Result<Article> getTitleById(@PathVariable Long id) {
+        Article article = articleService.getTitleById(id);
+        return Result.success(article);
     }
 }

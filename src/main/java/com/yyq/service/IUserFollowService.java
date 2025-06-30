@@ -12,4 +12,6 @@ public interface IUserFollowService extends IService<UserFollow> {
     List<User> getFollowingList(Long userId);
 
     List<User> getFollowerList(Long userId);
+
+    List<Long> getFolloweeIds(Long userId);
 }

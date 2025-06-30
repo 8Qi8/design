@@ -48,4 +48,25 @@
         ORDER BY
             r.upload_time DESC
     </select>
+    <select id="getVideoList" resultType="com.yyq.pojo.vo.ResourceVO">
+        SELECT
+        r.id,
+        r.title,
+        r.description,
+        r.file_url AS fileUrl,          -- 下划线转驼峰
+        r.upload_time AS uploadTime,    -- 下划线转驼峰
+        r.download_count AS downloadCount,
+        r.uploader_id AS uploaderId,
+        u.username AS userName,         -- 匹配 userName 字段
+        u.avatar AS userAvatar          -- 匹配 userAvatar 字段
+        FROM
+        resource r
+        LEFT JOIN
+        user u ON r.uploader_id = u.id
+        <where>
+            r.file_url LIKE '%mp4%'
+        </where>
+        ORDER BY
+        r.upload_time DESC
+    </select>
 </mapper>

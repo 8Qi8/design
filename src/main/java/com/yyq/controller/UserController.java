@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -161,7 +162,15 @@ public class UserController {
         UserStatVO userStats = userService.getUserStats(userId);
         return Result.success(userStats);
     }
-
+    /**
+     * 查询所有用户
+     */
+    @GetMapping
+    public Result<List<User>> getAllUser() {
+        log.info("查询所有用户");
+        List<User> list = userService.list();
+        return Result.success(list);
+    }
     /**
      * 分页查询用户
      * @param employeePageQueryDTO

@@ -1,11 +1,14 @@
 package com.yyq.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yyq.handler.MyWebSocketHandler;
 import com.yyq.mapper.MessageMapper;
+import com.yyq.mapper.UserMapper;
 import com.yyq.pojo.entity.Message;
+import com.yyq.pojo.entity.User;
 import com.yyq.pojo.vo.ChatUserVO;
 import com.yyq.pojo.vo.CommentNotificationVO;
 import com.yyq.pojo.vo.FollowNotificationVO;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +27,8 @@ import java.util.Map;
 public class MassageServiceImpl extends ServiceImpl<MessageMapper, Message> implements IMessageService {
     @Autowired
     private MessageMapper messageMapper;
+    @Autowired
+    private UserMapper userMapper;
     /**
      * 发送消息并推送给接收者
      *
@@ -108,12 +114,29 @@ public class MassageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
      * @param content 通知内容
      */
     @Override
-    public void sendSystemNotification(String content) {
-        // 此处模拟推送给所有人（可替换为具体查询）
-        List<Long> allUserIds = List.of(1L, 2L, 3L); // 示例用户 ID
-        for (Long userId : allUserIds) {
-            sendMessageAndPush(0L, userId, content, "SYSTEM");
+    public void sendSystemNotification(String content, Long adminId) {
+        // 根据角色编号查询所有的学生和教师的id
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(User::getId)
+                .and(w -> w.eq(User::getRole, 1).or().eq(User::getRole, 3));
+        List<User> users = userMapper.selectList(wrapper);
+        // 批量发送消息
+        List<Message> messages = new ArrayList<>();
+
+        for (User user : users) {
+            Message message = new Message();
+            message.setSenderId(adminId);           // 系统管理员ID
+            message.setReceiverId(user.getId());    // 接收人ID
+            message.setType("SYSTEM");       // 消息类型，自定义枚举或字符串
+            message.setContent(content);            // 通知内容
+            message.setCreateTime(LocalDateTime.now());
+            message.setIsRead(0);               // 默认未读
+            messages.add(message);
         }
+
+        // 批量插入通知消息
+        messageMapper.insertBatchSomeColumn(messages);  // 你可以改成你项目实际的批量插入方法
+
     }
 
     /**
@@ -166,5 +189,15 @@ public class MassageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     @Override
     public List<CommentNotificationVO> getCommentNotificationsByUserId(Long userId) {
         return messageMapper.selectCommentNotificationsByUserId(userId);
+    }
+    /**
+     * 获取系统消息
+     * @return
+     */
+    @Override
+    public List<Message> getSystemMessages(Long userId) {
+        LambdaQueryWrapper<Message> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Message::getType, "SYSTEM").and(w -> w.eq(Message::getReceiverId, userId));
+        return messageMapper.selectList(wrapper);
     }
 }

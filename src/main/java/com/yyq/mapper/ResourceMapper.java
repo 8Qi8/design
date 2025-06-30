@@ -13,4 +13,6 @@ public interface ResourceMapper extends BaseMapper<Resource> {
     List<ResourceVO> getListWithUser();
 
     List<ResourceVO> getListByTitleAndDescription(String searchKey);
+
+    List<ResourceVO> getVideoList();
 }

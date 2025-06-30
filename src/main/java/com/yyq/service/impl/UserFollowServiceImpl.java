@@ -63,5 +63,19 @@ public class UserFollowServiceImpl extends ServiceImpl<UserFollowMapper, UserFol
         }
         return userMapper.selectBatchIds(followerIds);
     }
+    /**
+     * 获取用户关注的用户ID列表
+     */
+    @Override
+    public List<Long> getFolloweeIds(Long userId) {
+        // 1.查询用户关注关系表
+        LambdaQueryWrapper<UserFollow> lqw = new LambdaQueryWrapper<>();
+        lqw.select(UserFollow::getFolloweeId) // 只查询被关注者ID列
+                .eq(UserFollow::getUserId, userId);
+        List<Long> followedUserIds = list(lqw).stream()
+                .map(UserFollow::getFolloweeId)
+                .collect(Collectors.toList());
+        return followedUserIds;
+    }
 
 }

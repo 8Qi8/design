@@ -24,4 +24,9 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceMapper, Resource> i
     public List<ResourceVO> getListByTitleAndDescription(String searchKey) {
         return resourceMapper.getListByTitleAndDescription(searchKey);
     }
+    //  获取所有视频资源
+    @Override
+    public List<ResourceVO> getVideoList() {
+        return resourceMapper.getVideoList();
+    }
 }

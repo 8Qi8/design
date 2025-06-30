@@ -8,17 +8,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class GraduationDesignApplicationTests {
 
-/*	@Test
-	void contextLoads() {
+	@Test
+	void textMessage() {
         try {
             SmsUtil.sendMessage("阿里云短信测试", "SMS_154950909",
 					"18715989890", "1234");
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }*/
+    }
     @Test
-    void contextLoads() {
+    void testAI() {
         String result = QwenAIUtil.askAI("对候选解的种群进行操作，主要包含以下几个主要操作：\n" +
                 "\n" +
                 "\n" +

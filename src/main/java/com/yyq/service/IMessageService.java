@@ -14,7 +14,7 @@ public interface IMessageService extends IService<Message>{
     void sendCommentNotification(Long senderId, Long receiverId, String content);
     void sendLikeNotification(Long senderId, Long receiverId,String content);
     void sendFollowNotification(Long senderId, Long receiverId, String content);
-    void sendSystemNotification(String content);
+    void sendSystemNotification(String content, Long adminId);
 
 
     List<ChatUserVO> getChatUserList(Long userId);
@@ -28,4 +28,6 @@ public interface IMessageService extends IService<Message>{
     List<FollowNotificationVO> getFollowNotifications(Long userId);
 
     List<CommentNotificationVO> getCommentNotificationsByUserId(Long userId);
+
+    List<Message> getSystemMessages(Long userId);
 }

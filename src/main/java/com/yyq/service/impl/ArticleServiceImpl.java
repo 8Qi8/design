@@ -1,9 +1,11 @@
 package com.yyq.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
@@ -403,4 +405,80 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return articleVOS;
     }
 
+    public List<ArticleVO> getArticlesByUserIds(List<Long> followeeIds) {
+        List<Article> articles = articleMapper.selectList(
+                new LambdaQueryWrapper<Article>()
+                        .in(Article::getUserId, followeeIds)
+                        .orderByDesc(Article::getCreateTime)
+        );
+        List<ArticleVO> articleVOS = new ArrayList<>();
+        for (Article article : articles) {
+            ArticleVO articleVO = new ArticleVO();
+            BeanUtils.copyProperties(article, articleVO);
+            articleVO.setLabelIds(articleLabelMapper.selectLabelIdsByArticleId(article.getId()));
+            articleVO.setUserName(userMapper.selectById(article.getUserId()).getUsername());
+            articleVO.setUserAvatar(userMapper.selectById(article.getUserId()).getAvatar());
+            articleVOS.add(articleVO);
+        }
+        return articleVOS;
+    }
+    /**
+     * 搜索文章
+     *
+     * @param keyword
+     * @return
+     */
+    @Override
+    public List<ArticleVO> searchArticles(String keyword) {
+        // 构建模糊查询条件
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper
+                .like(StringUtils.isNotBlank(keyword), Article::getTitle, keyword)
+                .or()
+                .like(StringUtils.isNotBlank(keyword), Article::getContent, keyword)
+                .orderByDesc(Article::getCreateTime);
+        // 查询文章
+        List<Article> articles = this.list(queryWrapper);
+        List<ArticleVO> articleVOS = new ArrayList<>();
+        for (Article article : articles) {
+            ArticleVO articleVO = new ArticleVO();
+            BeanUtils.copyProperties(article, articleVO);
+            articleVO.setLabelIds(articleLabelMapper.selectLabelIdsByArticleId(article.getId()));
+            articleVO.setUserName(userMapper.selectById(article.getUserId()).getUsername());
+            articleVO.setUserAvatar(userMapper.selectById(article.getUserId()).getAvatar());
+            articleVOS.add(articleVO);
+        }
+        return articleVOS;
+
+    }
+    /**
+     * 获取用户点赞的文章
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<ArticleVO> getLikeArticles(Long userId) {
+        // 获取点赞文章id
+        LambdaQueryWrapper<ArticleLike> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(ArticleLike::getArticleId).eq(ArticleLike::getUserId, userId);
+        List<ArticleLike> articleLikes = articleLikeMapper.selectList(queryWrapper);
+        List<Long> articleIds = articleLikes.stream().map(ArticleLike::getArticleId).collect(Collectors.toList());
+        List<Article> articles = articleMapper.selectBatchIds(articleIds);
+        List<ArticleVO> articleVOS = new ArrayList<>();
+        for (Article article : articles) {
+            ArticleVO articleVO = new ArticleVO();
+            BeanUtils.copyProperties(article, articleVO);
+            articleVO.setLabelIds(articleLabelMapper.selectLabelIdsByArticleId(article.getId()));
+            articleVO.setUserName(userMapper.selectById(article.getUserId()).getUsername());
+            articleVO.setUserAvatar(userMapper.selectById(article.getUserId()).getAvatar());
+            articleVOS.add(articleVO);
+        }
+        return articleVOS;
+    }
+
+    @Override
+    public Article getTitleById(Long id) {
+        return baseMapper.selectById(id);
+    }
 }

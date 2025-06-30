@@ -41,4 +41,12 @@ public interface IArticleService extends IService<Article> {
     List<ArticleVO> getList();
 
     List<ArticleVO> getByLabelId(Long labelId);
+
+    List<ArticleVO> getArticlesByUserIds(List<Long> followeeIds);
+
+    List<ArticleVO> searchArticles(String keyword);
+
+    List<ArticleVO> getLikeArticles(Long userId);
+
+    Article getTitleById(Long id);
 }

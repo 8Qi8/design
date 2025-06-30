@@ -82,5 +82,10 @@ public class ResourceController {
         resourceService.updateById(resource);
         return Result.success("下载成功");
     }
-
+    // 获取视频资源列表
+    @GetMapping("/video")
+    public Result<List<ResourceVO>> getVideoResources() {
+        log.info("获取视频资源列表");
+        return Result.success(resourceService.getVideoList());
+    }
 }
